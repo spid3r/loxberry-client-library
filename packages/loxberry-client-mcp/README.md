@@ -8,7 +8,7 @@ stdio [Model Context Protocol](https://modelcontextprotocol.io) server that expo
 
 This package is developed in the **[loxberry-client-library](https://github.com/spid3r/loxberry-client-library)** monorepo (`packages/loxberry-client-mcp`) and published to npm as **`loxberry-client-mcp`**. The published tarball includes this **README**, **CHANGELOG**, and **LICENSE**; registry metadata also carries **`license`: `MIT`** from `package.json`.
 
-**Dependencies:** `package.json` pins **`loxberry-client-library`** to **`^1.0.0`** (the core client on npm). Other runtime deps are **`@modelcontextprotocol/sdk`** and **`zod`**. The monorepo uses a single root **`package-lock.json`**; **[Dependabot](https://docs.github.com/en/code-security/dependabot)** ([`.github/dependabot.yml`](../../.github/dependabot.yml)) opens weekly PRs to bump those packages—merge them like any other dependency update.
+**Dependencies:** `package.json` pins **`loxberry-client-library`** to **`^1.0.0`** (the core client on npm). Other runtime deps are **`@modelcontextprotocol/sdk`** and **`zod`**. The monorepo uses a single root **`package-lock.json`**; **[Dependabot](https://docs.github.com/en/code-security/dependabot)** ([`.github/dependabot.yml`](../../.github/dependabot.yml)) opens weekly PRs to bump those packages—merge them like any other dependency update. New npm versions of this package follow [semantic-release](https://github.com/semantic-release/semantic-release) on `main`; **`chore:`**-only commits do not publish—see [RELEASING.md](../../RELEASING.md).
 
 ## Setup
 

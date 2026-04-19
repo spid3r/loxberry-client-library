@@ -63,6 +63,8 @@ The **`version`** field in root `package.json` is **updated by semantic-release*
 - Any **`feat:`** (minor bump from 0.0.0) → often **`0.1.0`**.
 - Only **`docs:`** / **`chore:`** / **`ci:`** with no `fix`/`feat` → **no release** (semantic-release exits successfully with nothing to publish).
 
+**Dependency / security / lockfile-only work** often lands as **`chore:`** — that **does not** publish a new **`loxberry-client-library`** or **`loxberry-client-mcp`** version. To **cut a release** after such maintenance, push at least one releasable commit (**`fix:`** / **`feat:`** / breaking change). To publish **both** packages in one push, use a **`fix:`** (or **`feat:`**) whose **diff touches** the repo root (e.g. `package.json` / lockfile) **and** `packages/loxberry-client-mcp/` if the MCP package should also ship. Use **`fix(mcp):` / `feat(mcp):`** only when you want the **MCP** release notes without bumping the core library ([`.releaserc.json`](.releaserc.json) ignores **`mcp`** scope for the root analyzer).
+
 So: use at least one **`fix:`** or **`feat:`** on `main` before expecting npm/GitHub release output. The workflow also creates a **git tag** (e.g. `v0.1.0`) and a **GitHub Release** (via `@semantic-release/github`), and commits **`CHANGELOG.md`** + version bump via **`@semantic-release/git`**.
 
 ### GitHub Actions

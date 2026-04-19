@@ -201,7 +201,7 @@ Auto-generated from [`src/cli-reference.ts`](src/cli-reference.ts) — run `npm 
 |---------|-------------|
 | `loxberry-client plugins list` | Print installed plugins (JSON) from plugin admin list URL. |
 | `loxberry-client plugins upload --file ./plugin.zip` | POST multipart upload to stock `plugininstall.cgi` (set `LOXBERRY_SECURE_PIN` for install).<br><small>Does not wait on tempfile install log; use the library API (`followPluginInstallTempLog`) for automation.</small> |
-| `loxberry-client plugins uninstall --name <md5|folder>` | Two-step GET uninstall (confirm + `answer=1`), same as the web UI. |
+| `loxberry-client plugins uninstall --name <md5-or-folder>` | Two-step GET uninstall (confirm + `answer=1`), same as the web UI. |
 | `loxberry-client logs install` | Read `getInstallLog()` (generic path; not the per-upload tempfile).<br><small>Add `--follow` to poll until a completion phrase appears.</small> |
 | `loxberry-client jsonrpc call <method> [--params '[]']` | Call `/admin/system/jsonrpc.php` with session/Basic headers. |
 

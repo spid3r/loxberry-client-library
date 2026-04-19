@@ -43,7 +43,7 @@ export const CLI_COMMANDS: CliCommand[] = [
     ],
   },
   {
-    usage: "plugins uninstall --name <md5|folder>",
+    usage: "plugins uninstall --name <md5-or-folder>",
     summary: "Two-step GET uninstall (confirm + `answer=1`), same as the web UI.",
   },
   {

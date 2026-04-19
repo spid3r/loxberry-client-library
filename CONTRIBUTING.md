@@ -13,7 +13,7 @@ The published **loxberry-client-library** tarball has no runtime **dependencies*
 ### “Future proof” without constant churn
 
 - **`package-lock.json`** is the reproducible snapshot: commit it, use **`npm ci`** in CI (already do).
-- **Root `overrides`**: [`package.json`](package.json) pins patched transitive versions (e.g. **`diff`**, **`serialize-javascript`**, **`picomatch`**, **`brace-expansion`**) so **`npm audit`** stays clean for normal contributor installs. Update these when advisories change.
+- **Root `overrides`**: [`package.json`](package.json) pins **`diff`** and **`serialize-javascript`** to patched versions pulled in by **mocha** — the smallest set that keeps **`npm audit`** clean until upstream mocha bumps those deps. Remove or narrow overrides when mocha no longer needs them.
 - **Ranges in `package.json`**: we use **`~`** on **TypeScript** (`~6.0.x`) so you get **patch** fixes within the 6.0 line without automatic minors. Other tools use **`^`** where semver breakage is rarer; adjust if you want stricter pins.
 - **Declarations**: **`npm run build`** runs **`tsc --emitDeclarationOnly -p tsconfig.dts.json`** after **tsup** so `.d.ts` files come from the official compiler, not from tsup’s DTS worker (that worker injects deprecated `baseUrl` on TypeScript 6+ — [egoist/tsup#1388](https://github.com/egoist/tsup/issues/1388)). No `ignoreDeprecations` workarounds.
 - **“Latest” everywhere** (`npm update` to absolute newest majors) is optional and high-touch; run **`npm outdated`** occasionally and upgrade on your schedule.

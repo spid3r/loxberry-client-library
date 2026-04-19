@@ -133,7 +133,7 @@ To clean extra packages after experimenting: `npm prune` (optional).
 
 ## Workspace package (`loxberry-client-mcp`)
 
-- **Dependency:** `packages/loxberry-client-mcp/package.json` uses **`"loxberry-client-library": "^0.0.1"`** (semver from npm). Widen the range (e.g. `^0.1.0`) when you publish breaking or major core versions if needed.
+- **Dependency:** `packages/loxberry-client-mcp/package.json` lists **`"loxberry-client-library": "^1.0.0"`** so consumers get any compatible **1.x** release from npm. In this monorepo, **npm workspaces** satisfy that range from the **workspace root** (same repo). When you ship a **breaking** core **2.x**, raise the range (e.g. `^2.0.0`) in MCP’s `package.json` and cut an MCP release. Third-party MCP deps (`@modelcontextprotocol/sdk`, `zod`, …) stay current via **[Dependabot](https://docs.github.com/en/code-security/dependabot)** ([`.github/dependabot.yml`](.github/dependabot.yml)), which opens weekly PRs against the root **`package-lock.json`** (covers all workspaces).
 - **Trusted publishing:** Configure npm **Trusted publishing** for **`loxberry-client-mcp`** separately from the core package, same GitHub repo and workflow file **`release.yml`**.
 - **Root vs MCP commits:** The root [`.releaserc.json`](.releaserc.json) sets **`releaseRules`** so commits with **`scope: mcp`** do **not** bump the **library** version (MCP-only work is released via the MCP job). Prefer **`feat(mcp):`** / **`fix(mcp):`** when a commit message mentions MCP but touches files outside `packages/loxberry-client-mcp/` (rare); **path-based** MCP releases still depend on files under that directory.
 

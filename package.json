@@ -93,22 +93,6 @@
   "author": "Thorsten Wolf",
   "overrides": {
     "diff": "^8.0.4",
-    "serialize-javascript": "^7.0.5",
-    "brace-expansion": "^5.0.5",
-    "tinyglobby": {
-      "picomatch": "^4.0.4",
-      "fdir": {
-        "picomatch": "^4.0.4"
-      }
-    },
-    "npm": {
-      "brace-expansion": "^5.0.5",
-      "tinyglobby": {
-        "picomatch": "^4.0.4",
-        "fdir": {
-          "picomatch": "^4.0.4"
-        }
-      }
-    }
+    "serialize-javascript": "^7.0.5"
   }
 }

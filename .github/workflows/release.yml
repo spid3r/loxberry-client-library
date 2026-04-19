@@ -36,18 +36,25 @@ jobs:
         run: git diff --exit-code README.md
       - run: npm run build:all
       - run: npm run test:mcp
-      - name: Install semantic-release (not a root devDependency — keeps contributor installs smaller)
+      - name: Install semantic-release + multi-semantic-release (not root devDependencies — keeps contributor installs smaller)
         run: |
           npm install --no-save \
             semantic-release@25 \
             @semantic-release/changelog@6 \
             @semantic-release/git@10 \
             @semantic-release/npm@13 \
-            @semantic-release/github@12
-      - run: npx semantic-release
+            @semantic-release/github@12 \
+            multi-semantic-release@3
+      - name: Release library (root package)
+        run: npx semantic-release
         env:
           # Built-in Actions token: @semantic-release/git (push) + @semantic-release/github (releases).
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Prefer npm "Trusted publishing" (OIDC): configure package on npmjs.com for workflow file **release.yml**,
           # then omit NPM_TOKEN. Optional fallback while migrating: set repo secret NPM_TOKEN (automation token).
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Release MCP package (only if commits touched packages/loxberry-client-mcp/)
+        run: node scripts/release-mcp.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

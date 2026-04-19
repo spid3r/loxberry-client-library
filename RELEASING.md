@@ -127,24 +127,15 @@ To clean extra packages after experimenting: `npm prune` (optional).
 ### What happens on a real push to `main`
 
 1. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs (tests, typecheck, README sync, build, MCP smoke).
-2. [`.github/workflows/release.yml`](.github/workflows/release.yml) runs the same checks, then **`npx semantic-release`** for real: may create a **version commit**, **git tag**, **GitHub Release**, **CHANGELOG**, and **npm publish** — only if conventional commits warrant a release and auth succeeds.
+2. [`.github/workflows/release.yml`](.github/workflows/release.yml) runs the same checks, then:
+   - **`npx semantic-release`** — publishes **`loxberry-client-library`** (root `package.json`) when conventional commits warrant it.
+   - **`node scripts/release-mcp.mjs`** — runs [**multi-semantic-release**](https://github.com/dhoulb/multi-semantic-release) for **`packages/loxberry-client-mcp` only**: commit history is **filtered to that folder**, so **no MCP publish** happens if nothing under `packages/loxberry-client-mcp/` changed since the last MCP release. Tags look like **`loxberry-client-mcp@1.2.3`** (not `v1.2.3`).
 
 ## Workspace package (`loxberry-client-mcp`)
 
-The MCP server is a **second npm package** (`loxberry-client-mcp`) under `packages/loxberry-client-mcp`. The root **`semantic-release` job only publishes `loxberry-client-library`** today. To ship **both** on npm:
-
-1. **Publish the core library first** (so `loxberry-client-library` exists on the registry at a known version).
-2. In `packages/loxberry-client-mcp/package.json`, replace  
-   `"loxberry-client-library": "file:../.."`  
-   with a **semver range** that matches the published core, e.g. `"^0.0.1"` or `"^0.1.0"`.
-3. Bump **`packages/loxberry-client-mcp` `version`** when you cut an MCP release (it can track the core version or use its own semver).
-4. From the repo root:  
-   `npm publish -w loxberry-client-mcp --access public`  
-   (with the same **trusted publishing** / **`NPM_TOKEN`** setup as the core package — register a **second** trusted publisher on npmjs for **`loxberry-client-mcp`**, same workflow file **`release.yml`**, or use a token for that package.)
-
-**Automating two packages in one workflow** is optional (e.g. a follow-up step or `semantic-release` monorepo tooling). Until then, treat the MCP publish as a **manual or scripted** step after the core release.
-
-**`workspace:` protocol:** On **npm 9+**, monorepos often use `"loxberry-client-library": "workspace:*"` so `npm publish -w loxberry-client-mcp` rewrites the dependency in the packed tarball. Older npm versions may not support `workspace:`; keep `file:../..` for local dev and swap to semver only when publishing if needed.
+- **Dependency:** `packages/loxberry-client-mcp/package.json` uses **`"loxberry-client-library": "^0.0.1"`** (semver from npm). Widen the range (e.g. `^0.1.0`) when you publish breaking or major core versions if needed.
+- **Trusted publishing:** Configure npm **Trusted publishing** for **`loxberry-client-mcp`** separately from the core package, same GitHub repo and workflow file **`release.yml`**.
+- **Root vs MCP commits:** The root [`.releaserc.json`](.releaserc.json) sets **`releaseRules`** so commits with **`scope: mcp`** do **not** bump the **library** version (MCP-only work is released via the MCP job). Prefer **`feat(mcp):`** / **`fix(mcp):`** when a commit message mentions MCP but touches files outside `packages/loxberry-client-mcp/` (rare); **path-based** MCP releases still depend on files under that directory.
 
 ## README CLI reference
 

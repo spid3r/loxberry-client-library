@@ -35,11 +35,11 @@ Target users: **plugin developers** automating test/deploy against a real or moc
 
 - Path: `packages/loxberry-client-mcp`, binary **`loxberry-client-mcp`**, server metadata name **`loxberry-client-mcp`**.
 - Build: `npm run build:all`. Smoke: `npx @modelcontextprotocol/inspector node packages/loxberry-client-mcp/dist/server.js`.
-- Depends on root library via `file:../..` until publish; see `RELEASING.md`.
+- Depends on **`loxberry-client-library`** via semver in `package.json`; see `RELEASING.md`.
 
 ## Release
 
 - Root: semantic-release on `main`; **`GITHUB_TOKEN`** for git push + GitHub Release; npm publish via **[trusted publishing (OIDC)](https://docs.npmjs.com/trusted-publishers/)** on workflow **`release.yml`** (preferred) or optional **`NPM_TOKEN`**. See `RELEASING.md`.
 - Conventional commits enforced on PRs via commitlint (see `CONTRIBUTING.md`).
 - MCP smoke: `npm run test:mcp` after build.
-- MCP npm package: still manual / separate until automated; see `RELEASING.md`.
+- MCP npm package: released by `scripts/release-mcp.mjs` (multi-semantic-release) after the core library step; see `RELEASING.md`.

@@ -111,4 +111,4 @@ Each tool includes [MCP tool annotations](https://modelcontextprotocol.io) (`rea
 
 ## Publishing
 
-This package is published separately from **`loxberry-client-library`**. Before the first npm publish, set the dependency to a **semver range** of the published core package (not `file:../..`). See [RELEASING.md](../../RELEASING.md).
+This package is published separately from **`loxberry-client-library`** and depends on it via **semver** in `package.json`. Releases are automated from `main` (see [RELEASING.md](../../RELEASING.md)).

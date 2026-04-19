@@ -41,6 +41,8 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) so [semantic-re
 | `feat!:` or `BREAKING CHANGE:` in footer | Major |
 | `docs:`, `chore:`, `ci:`, `test:` | Often no release (see analyzer defaults) |
 
+**`scope: mcp`:** The root package’s release analyzer treats **`feat(mcp):`**, **`fix(mcp):`**, etc. as **no version bump for `loxberry-client-library`** — MCP releases are handled by a **separate** [`multi-semantic-release`](https://github.com/dhoulb/multi-semantic-release) step that only considers commits touching `packages/loxberry-client-mcp/`. Use **`feat:`** / **`fix:`** without the `mcp` scope for changes to the core library.
+
 Merge commits from GitHub are ignored by [commitlint.config.cjs](commitlint.config.cjs).
 
 On a branch, after `git fetch origin`, you can check messages with:
@@ -63,7 +65,4 @@ This uses the official SDK client over stdio to call **`tools/list`**; it does n
 
 ## Publishing `loxberry-client-mcp` for others
 
-Today only **`loxberry-client-library`** is released by the workflow on npm. Others can still use the MCP server by:
-
-1. **Clone + workspace**: `npm install` at repo root, `npm run build:all`, point Cursor at `packages/loxberry-client-mcp/dist/server.js`.
-2. **Future npm package `loxberry-client-mcp`**: change its dependency from `file:../..` to a published semver on `loxberry-client-library`, then `npm publish -w loxberry-client-mcp --access public` (manually or a second workflow). See [RELEASING.md](RELEASING.md).
+The [Release workflow](.github/workflows/release.yml) runs **`semantic-release`** for the core library, then **`node scripts/release-mcp.mjs`** ([multi-semantic-release](https://github.com/dhoulb/multi-semantic-release)) for **`loxberry-client-mcp`** when commits touch that folder. Consumers can **`npm install -g loxberry-client-mcp`**; it depends on **`loxberry-client-library`** from the registry via semver. See [RELEASING.md](RELEASING.md).

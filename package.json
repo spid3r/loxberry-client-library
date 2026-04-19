@@ -57,7 +57,8 @@
     "test:mcp": "node --import=tsx/esm packages/loxberry-client-mcp/test/smoke.ts",
     "build:e2e-zip": "tsx scripts/build-e2e-plugin-zip.ts",
     "lint:commits": "commitlint --from origin/main --to HEAD --verbose",
-    "release:dry-run": "npm install --no-save semantic-release@25 @semantic-release/changelog@6 @semantic-release/git@10 @semantic-release/npm@13 @semantic-release/github@12 && npx semantic-release --dry-run",
+    "release:dry-run": "npm install --no-save semantic-release@25 @semantic-release/changelog@6 @semantic-release/git@10 @semantic-release/npm@13 @semantic-release/github@12 multi-semantic-release@3 && npx semantic-release --dry-run && node scripts/release-mcp.mjs --dry-run",
+    "release:mcp": "node scripts/release-mcp.mjs",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
@@ -68,6 +69,7 @@
     "cross-env": "^10.1.0",
     "jszip": "^3.10.1",
     "mocha": "^11.7.5",
+    "multi-semantic-release": "^3.1.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "~6.0.3",

@@ -18,7 +18,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -29,7 +30,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "loxberry-client-library": "file:../..",
+    "loxberry-client-library": "^0.0.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {

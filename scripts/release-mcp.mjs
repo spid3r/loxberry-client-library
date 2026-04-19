@@ -8,9 +8,29 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const multiSemanticRelease = require("multi-semantic-release/lib/multiSemanticRelease.js");
 
-const root = path.dirname(fileURLToPath(new URL("..", import.meta.url)));
+// multi-semantic-release uses CJS require() against semantic-release, which is ESM-only from v20+.
+// Unwrap `module.exports.default` to the default export before semrel.js caches the namespace object.
+function unwrapEsmDefaultForCjs(moduleId) {
+  let resolved;
+  try {
+    resolved = require.resolve(moduleId);
+  } catch {
+    return;
+  }
+  const mod = require(resolved);
+  if (mod?.__esModule && mod.default !== undefined) {
+    require.cache[resolved].exports = mod.default;
+  }
+}
+
+unwrapEsmDefaultForCjs("semantic-release/lib/get-config");
+unwrapEsmDefaultForCjs("semantic-release");
+
+// Use package root (exports "."); subpaths under lib/ are not exported.
+const multiSemanticRelease = require("multi-semantic-release");
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const flags = {
   deps: { bump: "override", release: "patch", prefix: "" },
   dryRun: process.argv.includes("--dry-run"),

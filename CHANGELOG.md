@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/spid3r/loxberry-client-library/compare/v1.0.1...v1.0.2) (2026-04-19)
+
+
+### Bug Fixes
+
+* publish security and dependency maintenance to npm ([5ef0673](https://github.com/spid3r/loxberry-client-library/commit/5ef06737d6425b80897a2b17afe4ff2113799b4e))
+
 ## [1.0.1](https://github.com/spid3r/loxberry-client-library/compare/v1.0.0...v1.0.1) (2026-04-19)
 
 

@@ -19,11 +19,85 @@ TypeScript client for **LoxBerry 3.x** (3.x-first): JSON-RPC (`/admin/system/jso
 - [LoxBerry wiki — Node.js & JsonRpc](https://wiki.loxberry.de/entwickler/advanced_developers/nodejs_for_plugins)
 - [Forum — JSON-RPC & MQTT](https://www.loxforum.com/forum/projektforen/loxberry/entwickler/330178-app-development-and-access-to-loxberry-using-json-rpc-and-or-webservices)
 
-## Install
+## Table of contents
+
+- [Ways to use this project](#ways-to-use-this-project)
+- [Install](#install)
+- [Quick usage](#quick-usage)
+- [Architecture (overview)](#architecture-overview)
+- [CLI](#cli)
+- [Environment file](#environment-file)
+- [Browser and global builds](#browser-and-global-builds)
+- [Plugin admin (stock LoxBerry)](#plugin-admin-stock-loxberry)
+- [Plugin admin paths](#plugin-admin-paths)
+- [MCP server](#mcp-server)
+- [Development](#development)
+- [License](#license)
+- [Funding](#funding)
+
+## Ways to use this project
+
+You can integrate with LoxBerry in three complementary ways — often **library + CLI** for plugin development, or **MCP** when you want an AI assistant to drive the same operations.
+
+| How | npm package | What it is for |
+|-----|-------------|----------------|
+| **Client library** | [`loxberry-client-library`](https://www.npmjs.com/package/loxberry-client-library) | **Automate** JSON-RPC, plugin **list / upload / uninstall**, and install-log polling from **Node.js or TypeScript** — ideal for **tests**, **CI**, and **plugin tooling** (build a zip, upload, verify, tear down). |
+| **CLI** | same package (binary `loxberry-client`) | **Shell-friendly** commands (`plugins list`, `plugins upload`, `plugins uninstall`, `jsonrpc call`, …) without writing code. |
+| **MCP server** | [`loxberry-client-mcp`](https://www.npmjs.com/package/loxberry-client-mcp) | **Model Context Protocol** stdio server for editors such as **Cursor** / **VS Code** — exposes LoxBerry operations as **tools** for assistants. |
+
+**Plugin development and testing:** the library matches stock **`plugininstall.cgi`** behavior (multipart upload with SecurePIN, uninstall confirm flow, temp install log polling). That lets you **repeat upload → install → uninstall** cycles from scripts or tests instead of only manual clicks — see [Development](#development) → live tests (`test:live:full`) for an end-to-end example.
+
+### Install locally (in another project)
+
+Add the core package as a **dependency** so versions are pinned in `package-lock.json`:
 
 ```bash
 npm install loxberry-client-library
 ```
+
+Use `npx loxberry-client …` from that project for CLI commands, or `import { … } from "loxberry-client-library"` in code ([Quick usage](#quick-usage)).
+
+### CLI: `npx` vs local vs global
+
+- **`npx loxberry-client`** (after a local `npm install loxberry-client-library`) — runs the CLI from your project’s `node_modules` without a global install. Good for CI and team repos.
+- **Global CLI** — one install, `loxberry-client` on your `PATH` everywhere:
+
+  ```bash
+  npm install -g loxberry-client-library
+  loxberry-client --help
+  ```
+
+  Use when you want the same commands in any directory without a `package.json`.
+
+### MCP server install
+
+The MCP package is **separate** on npm (same GitHub monorepo). Install it like any other tool:
+
+```bash
+npm install loxberry-client-mcp
+```
+
+```bash
+npx loxberry-client-mcp
+```
+
+or, globally: `npm install -g loxberry-client-mcp` then `loxberry-client-mcp`. Configuration (env vars, IDE `mcp.json`) is covered in [MCP server](#mcp-server) and [packages/loxberry-client-mcp/README.md](packages/loxberry-client-mcp/README.md).
+
+## Install
+
+**Core library + CLI** (this repository’s main package):
+
+```bash
+npm install loxberry-client-library
+```
+
+**MCP server** (optional; separate package):
+
+```bash
+npm install loxberry-client-mcp
+```
+
+See [Ways to use this project](#ways-to-use-this-project) for when to use each and local vs global CLI.
 
 ## Quick usage
 
@@ -151,7 +225,7 @@ npx loxberry-client jsonrpc call LBSystem::get_miniservers --params '[]'
 
 [`.npmrc`](.npmrc) sets **`ignore-scripts=true`** so dependency **postinstall** (and similar) scripts do not run during `npm install`. This library has **no runtime npm dependencies** (only devDependencies for building and testing). To run install scripts once (e.g. debugging a native addon), use `npm install --ignore-scripts=false` or temporarily remove that line.
 
-## Browser & global builds
+## Browser and global builds
 
 - **ESM / CJS**: `dist/index.js` and `dist/index.cjs` (see `package.json` `exports`).
 - **IIFE (global)**: `dist/loxberry-client.browser.global.js` exposes the default export as `window.LoxBerryClient` (namespace object).

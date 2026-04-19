@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/spid3r/loxberry-client-library/compare/v1.0.2...v1.0.3) (2026-04-19)
+
+
+### Bug Fixes
+
+* **docs:** repair CLI commands table (pipe broke markdown column) ([470e6b3](https://github.com/spid3r/loxberry-client-library/commit/470e6b368e67794358b495884140caa44bc706c5))
+
 ## [1.0.2](https://github.com/spid3r/loxberry-client-library/compare/v1.0.1...v1.0.2) (2026-04-19)
 
 

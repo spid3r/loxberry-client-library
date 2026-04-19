@@ -98,6 +98,11 @@ Your local [`.npmrc`](.npmrc) `ignore-scripts=true` is unrelated to publish auth
 
 **Forks:** pushes to `main` on a fork without your npm setup will fail at publish (expected). Either disable the workflow on forks or skip the release job when `github.repository` is not the canonical repo.
 
+#### Troubleshooting npm in CI
+
+- **`404` OIDC / “package not found”** — [Trusted publishing](https://docs.npmjs.com/trusted-publishers/) is bound to a package that **already exists** on the registry. If **`loxberry-client-library`** has never been published, OIDC exchange can fail with **package not found**. Fix: publish **once** (e.g. local **`npm login`** → **`npm run build`** → **`npm publish --access public`**) or add a GitHub Actions secret **`NPM_TOKEN`** (automation token with publish rights) and **re-run** the failed **Release** workflow; then attach **Trusted publishing** in the package’s npm settings for future OIDC-only runs.
+- **`EINVALIDNPMTOKEN` / `npm whoami` 401** — With an empty **`NPM_TOKEN`**, npm relies on OIDC; if OIDC failed first, verification fails. Resolve with a valid **`NPM_TOKEN`** or a working trusted-publisher setup after the package exists.
+
 ### Changelog
 
 [@semantic-release/changelog](https://github.com/semantic-release/changelog) updates **`CHANGELOG.md`** and commits it together with the version bump (see `.releaserc.json`).

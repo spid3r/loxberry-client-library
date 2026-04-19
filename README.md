@@ -1,5 +1,15 @@
 # loxberry-client-library
 
+[![CI](https://github.com/spid3r/loxberry-client-library/actions/workflows/ci.yml/badge.svg)](https://github.com/spid3r/loxberry-client-library/actions/workflows/ci.yml)
+[![Release](https://github.com/spid3r/loxberry-client-library/actions/workflows/release.yml/badge.svg)](https://github.com/spid3r/loxberry-client-library/actions/workflows/release.yml)
+[![npm](https://img.shields.io/npm/v/loxberry-client-library)](https://www.npmjs.com/package/loxberry-client-library)
+[![License: MIT](https://img.shields.io/github/license/spid3r/loxberry-client-library)](LICENSE)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://www.conventionalcommits.org/)
+[![semantic-release](https://img.shields.io/badge/semantic--release-e10079?logo=semantic-release&logoColor=white)](https://github.com/semantic-release/semantic-release)
+[![Beerware](https://img.shields.io/badge/Beerware-1.0-FBB117.svg)](https://en.wikipedia.org/wiki/Beerware)
+
+Releases to npm and the changelog are driven by **[semantic-release](https://github.com/semantic-release/semantic-release)** on `main` using **[Conventional Commits](https://www.conventionalcommits.org/)** — see [RELEASING.md](RELEASING.md) and [CONTRIBUTING.md](CONTRIBUTING.md). **Beerware** is an informal thank-you on top of MIT ([below](#license)).
+
 TypeScript client for **LoxBerry 3.x** (3.x-first): JSON-RPC (`/admin/system/jsonrpc.php`), **HTTP Basic** on `/admin` (same as [stock `htmlauth/.htaccess`](https://github.com/mschlenstedt/Loxberry/blob/master/webfrontend/htmlauth/.htaccess)), and helpers aligned with **`plugininstall.cgi`** (plugin list, upload with SecurePIN, uninstall). Includes a small CLI and an optional MCP server package.
 
 - [LoxBerry wiki — Node.js & JsonRpc](https://wiki.loxberry.de/entwickler/advanced_developers/nodejs_for_plugins)

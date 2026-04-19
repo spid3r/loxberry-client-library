@@ -7,11 +7,7 @@ export default defineConfig([
       mqtt: "src/mqtt.ts",
     },
     format: ["cjs", "esm"],
-    dts: {
-      entry: { index: "src/index.ts", mqtt: "src/mqtt.ts" },
-      // tsup’s DTS worker injects deprecated `baseUrl` (TS 6); keep silence here so root `tsconfig.json` stays schema-clean for the IDE.
-      compilerOptions: { ignoreDeprecations: "6.0" },
-    },
+    dts: false,
     sourcemap: true,
     clean: true,
     splitting: false,

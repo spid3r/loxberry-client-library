@@ -8,14 +8,14 @@ The published **loxberry-client-library** tarball has no runtime **dependencies*
 
 - **`package-lock.json`** is the reproducible snapshot: commit it, use **`npm ci`** in CI (already do).
 - **Ranges in `package.json`**: we use **`~`** on **TypeScript** (`~6.0.x`) so you get **patch** fixes within the 6.0 line without automatic minors. Other tools use **`^`** where semver breakage is rarer; adjust if you want stricter pins.
-- **TypeScript deprecations**: `ignoreDeprecations: "6.0"` is set on the **tsup DTS** `compilerOptions` only—remove it once `tsup` stops relying on deprecated options (see TS 6 [migration](https://aka.ms/ts6)); do not use it to hide unrelated drift.
+- **Declarations**: **`npm run build`** runs **`tsc --emitDeclarationOnly -p tsconfig.dts.json`** after **tsup** so `.d.ts` files come from the official compiler, not from tsup’s DTS worker (that worker injects deprecated `baseUrl` on TypeScript 6+ — [egoist/tsup#1388](https://github.com/egoist/tsup/issues/1388)). No `ignoreDeprecations` workarounds.
 - **“Latest” everywhere** (`npm update` to absolute newest majors) is optional and high-touch; run **`npm outdated`** occasionally and upgrade on your schedule.
 
 Every **`devDependencies`** entry exists for a concrete reason:
 
 | Package | Why it is here |
 |--------|----------------|
-| `typescript` (`~6.0.x`) / `tsup` | Build `dist/` (ESM/CJS/types/IIFE/CLI). `tsup.config.ts` passes `ignoreDeprecations: "6.0"` for the **DTS** step only (tsup injects deprecated `baseUrl`); root `tsconfig.json` stays free of that flag so editors don’t show a schema warning. |
+| `typescript` (`~6.0.x`) / `tsup` | **tsup** bundles JS (ESM/CJS/IIFE/CLI); **`tsconfig.dts.json`** + `tsc --emitDeclarationOnly` emits types (see row above). |
 | `tsx` | Run tests and small scripts without a separate compile step. |
 | `mocha` / `@types/mocha` | Unit tests. |
 | `@types/node` | Typings for Node APIs. |

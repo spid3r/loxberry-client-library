@@ -11,7 +11,7 @@
     ".": {
       "types": {
         "import": "./dist/index.d.ts",
-        "require": "./dist/index.d.cts"
+        "require": "./dist/index.d.ts"
       },
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
@@ -19,7 +19,7 @@
     "./mqtt": {
       "types": {
         "import": "./dist/mqtt.d.ts",
-        "require": "./dist/mqtt.d.cts"
+        "require": "./dist/mqtt.d.ts"
       },
       "import": "./dist/mqtt.js",
       "require": "./dist/mqtt.cjs"
@@ -43,7 +43,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsc --emitDeclarationOnly -p tsconfig.dts.json",
     "build:mcp": "npm run build -w loxberry-client-mcp",
     "docs:sync-cli": "tsx scripts/sync-readme-cli.mts",
     "build:all": "npm run build && npm run build:mcp",
@@ -92,5 +92,5 @@
     "typescript",
     "plugin"
   ],
-  "author": ""
+  "author": "Thorsten Wolf"
 }

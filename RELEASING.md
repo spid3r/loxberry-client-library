@@ -33,7 +33,7 @@ Use this when the repo is new or you are wiring CI and npm for the first time.
 
    The dry run shows whether semantic-release would cut a release from **current git history** and **does not** publish, tag, or push. If there is no `fix:` / `feat:` / breaking change yet, it may correctly report **no release**—that is expected for docs-only or chore-only commits.
 
-5. **Conventional commits** — PRs to `main` are commitlint-checked ([`CONTRIBUTING.md`](CONTRIBUTING.md)). Use at least one **`fix:`** or **`feat:`** on `main` before expecting the first npm version.
+5. **Conventional commits** — follow [Conventional Commits](https://www.conventionalcommits.org/) ([`CONTRIBUTING.md`](CONTRIBUTING.md)) so semantic-release can version and changelog correctly. Use at least one **`fix:`** or **`feat:`** on `main` before expecting the first npm version. There is no separate commit linter in CI; keep messages clear for reviewers and releases.
 
 6. **After the first successful publish** — A git tag (e.g. `v0.1.0`), GitHub Release, `CHANGELOG.md` update, and version bump commit are produced by semantic-release. That commit message includes **`[skip ci]`** so it does not re-trigger endless release loops.
 

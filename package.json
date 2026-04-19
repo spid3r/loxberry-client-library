@@ -1,7 +1,7 @@
 {
   "name": "loxberry-client-library",
   "version": "1.0.1",
-  "description": "TypeScript client for LoxBerry 3.x: JSON-RPC, plugin admin HTTP, optional MQTT broker hints via JSON-RPC, CLI.",
+  "description": "TypeScript client for LoxBerry 3.x: automate plugin zip upload, install, and uninstall (same flows as the stock admin UI), JSON-RPC, CLI, optional MCP server.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -56,14 +56,11 @@
     "test:live:debug:full": "cross-env LOXBERRY_LIVE_TESTS=1 LOXBERRY_LIVE_UPLOAD=1 LOXBERRY_LIVE_UNINSTALL=1 LOXBERRY_LIVE_DEBUG=1 mocha --import=tsx/esm \"test/**/*.test.ts\"",
     "test:mcp": "node --import=tsx/esm packages/loxberry-client-mcp/test/smoke.ts",
     "build:e2e-zip": "tsx scripts/build-e2e-plugin-zip.ts",
-    "lint:commits": "commitlint --from origin/main --to HEAD --verbose",
     "release:dry-run": "npm install --no-save semantic-release@25 @semantic-release/changelog@6 @semantic-release/git@10 @semantic-release/npm@13 @semantic-release/github@12 multi-semantic-release@3 && npx semantic-release --dry-run && node scripts/release-mcp.mjs --dry-run",
     "release:mcp": "npm install --no-save multi-semantic-release@3 && node scripts/release-mcp.mjs",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.5.0",
-    "@commitlint/config-conventional": "^20.5.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^25.6.0",
     "cross-env": "^10.1.0",

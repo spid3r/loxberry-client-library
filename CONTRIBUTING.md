@@ -18,6 +18,8 @@ The published **loxberry-client-library** tarball has no runtime **dependencies*
 - **Declarations**: **`npm run build`** runs **`tsc --emitDeclarationOnly -p tsconfig.dts.json`** after **tsup** so `.d.ts` files come from the official compiler, not from tsup’s DTS worker (that worker injects deprecated `baseUrl` on TypeScript 6+ — [egoist/tsup#1388](https://github.com/egoist/tsup/issues/1388)). No `ignoreDeprecations` workarounds.
 - **“Latest” everywhere** (`npm update` to absolute newest majors) is optional and high-touch; run **`npm outdated`** occasionally and upgrade on your schedule.
 
+We keep **devDependencies** small: only tools that are hard to replace with “vanilla” Node without losing **cross-platform** behavior or **test fidelity**. Optional policy tooling (e.g. commit message linters) is intentionally **not** in the tree — fewer packages mean fewer transitive advisories and less churn. **Conventional commits** remain important for [semantic-release](https://github.com/semantic-release/semantic-release); they are a **contributor convention**, not enforced by CI here.
+
 Every **`devDependencies`** entry exists for a concrete reason:
 
 | Package | Why it is here |
@@ -27,9 +29,8 @@ Every **`devDependencies`** entry exists for a concrete reason:
 | `mocha` / `@types/mocha` | Unit tests. |
 | `@types/node` | Typings for Node APIs. |
 | `undici` | `MockAgent` in tests; tests must use `fetch` from `undici` (see `test/helpers/undici-fetch.ts`) so mocks apply — Node’s `globalThis.fetch` does not always share that dispatcher. |
-| `jszip` | Live E2E zip assembly + `scripts/build-e2e-plugin-zip.ts`. |
-| `cross-env` | `test:live*` scripts set env vars on Windows and Unix. |
-| `@commitlint/cli` / `@commitlint/config-conventional` | Enforce commit messages on pull requests (CI). |
+| `jszip` | Live E2E zip assembly + `scripts/build-e2e-plugin-zip.ts` (creating valid plugin `.zip` files programmatically). |
+| `cross-env` | `test:live*` scripts set env vars the same way on **Windows, macOS, and Linux** (`VAR=value` vs `set VAR=value` is not portable without it). |
 
 **Semantic-release**, its publish plugins, and **multi-semantic-release** are **not** root devDependencies: the [Release workflow](.github/workflows/release.yml) installs them with `npm install --no-save` so **`npm ci`** does not pull the full release stack (including the **`npm`** CLI subtree used by **`@semantic-release/npm`**). The **`npm run release:mcp`** script installs **multi-semantic-release** the same way before running [`scripts/release-mcp.mjs`](scripts/release-mcp.mjs). To dry-run releases locally:
 
@@ -50,15 +51,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) so [semantic-re
 
 **`scope: mcp`:** The root package’s release analyzer treats **`feat(mcp):`**, **`fix(mcp):`**, etc. as **no version bump for `loxberry-client-library`** — MCP releases are handled by a **separate** [`multi-semantic-release`](https://github.com/dhoulb/multi-semantic-release) step that only considers commits touching `packages/loxberry-client-mcp/`. Use **`feat:`** / **`fix:`** without the `mcp` scope for changes to the core library.
 
-Merge commits from GitHub are ignored by [commitlint.config.cjs](commitlint.config.cjs).
-
-On a branch, after `git fetch origin`, you can check messages with:
-
-```bash
-npm run lint:commits
-```
-
-CI runs commitlint on **pull requests** only (commit range `base…head`).
+Before merging to `main`, skim your branch history so semantic-release will interpret commits as you intend (merge commits are handled per semantic-release / analyzer defaults).
 
 ## MCP package smoke test
 

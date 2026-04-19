@@ -6,6 +6,8 @@ Concise context for coding agents working in this repo. Authoritative details li
 
 TypeScript client for **LoxBerry 3.x**: JSON-RPC (`/admin/system/jsonrpc.php`), plugin admin HTTP aligned with stock **`plugininstall.cgi`**, optional **`fetchMqttConnectionDetails`** (JSON-RPC only, no MQTT npm client in-tree), **`loxberry-client`** CLI, optional **`loxberry-client-mcp`** stdio MCP server.
 
+**Why:** plugin iteration often means manual upload/wait/uninstall in the web UI; this repo automates those flows for scripts, CI, and MCP-driven workflows (see root [`README.md`](README.md) **Purpose**).
+
 Target users: **plugin developers** automating test/deploy against a real or mocked appliance.
 
 **Monorepo:** npm **workspaces** — root package **`loxberry-client-library`** and **`packages/loxberry-client-mcp`** (published as **`loxberry-client-mcp`**). Layout and dependency notes: [`CONTRIBUTING.md`](CONTRIBUTING.md).
@@ -42,6 +44,6 @@ Target users: **plugin developers** automating test/deploy against a real or moc
 ## Release
 
 - Root: semantic-release on `main`; **`GITHUB_TOKEN`** for git push + GitHub Release; npm publish via **[trusted publishing (OIDC)](https://docs.npmjs.com/trusted-publishers/)** on workflow **`release.yml`** (preferred) or optional **`NPM_TOKEN`**. See `RELEASING.md`.
-- Conventional commits enforced on PRs via commitlint (see `CONTRIBUTING.md`).
+- Use [Conventional Commits](https://www.conventionalcommits.org/) on `main` so releases version correctly (`CONTRIBUTING.md`); not machine-enforced in CI.
 - MCP smoke: `npm run test:mcp` after build.
 - MCP npm package: released by `scripts/release-mcp.mjs` (multi-semantic-release) after the core library step; see `RELEASING.md`.

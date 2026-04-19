@@ -19,8 +19,21 @@ TypeScript client for **LoxBerry 3.x** (3.x-first): JSON-RPC (`/admin/system/jso
 - [LoxBerry wiki — Node.js & JsonRpc](https://wiki.loxberry.de/entwickler/advanced_developers/nodejs_for_plugins)
 - [Forum — JSON-RPC & MQTT](https://www.loxforum.com/forum/projektforen/loxberry/entwickler/330178-app-development-and-access-to-loxberry-using-json-rpc-and-or-webservices)
 
+## Purpose
+
+When you **develop a LoxBerry plugin**, validating each build usually means **manual** work: open the appliance in a browser, go to **Plugin management**, **upload** your `.zip`, **wait** for `plugininstall.pl` to finish, test, then **uninstall** — often logging in again for every iteration.
+
+**This project automates those same stock flows** (multipart upload, install-log polling, uninstall confirmation) over HTTPS from **Node.js**, so you can wire **repeatable** pipelines on **Windows, macOS, or Linux**:
+
+- **`package.json` scripts** — e.g. `build → zip → upload → wait → test → uninstall` without touching the UI.
+- **CI** — run install/uninstall checks on a dev appliance from GitHub Actions or another runner.
+- **AI-assisted workflows** — the optional **`loxberry-client-mcp`** server exposes LoxBerry operations as MCP **tools** so assistants (Cursor, VS Code, …) can drive the same steps with your approval.
+
+Nothing replaces reading LoxBerry’s own docs for plugin packaging; this library only automates **HTTP** interaction with the **existing** admin and JSON-RPC endpoints.
+
 ## Table of contents
 
+- [Purpose](#purpose)
 - [Ways to use this project](#ways-to-use-this-project)
 - [Install](#install)
 - [Quick usage](#quick-usage)

@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v6
+        with:
+          # Trusted publishing (OIDC) requires Node ≥ 22.14 per npm docs
+          node-version: "22.14"
+          cache: npm
+          registry-url: "https://registry.npmjs.org"
+      - name: npm ≥ 11.5.1 (trusted publishing / OIDC)
+        run: npm install -g npm@^11.5.1
+      - run: npm ci
+      - run: npm run typecheck:test
+      - run: npm test
+      - run: npm run docs:sync-cli
+      - name: Ensure README CLI block is committed
+        run: git diff --exit-code README.md
+      - run: npm run build:all
+      - run: npm run test:mcp
+      - name: Install semantic-release (not a root devDependency — keeps contributor installs smaller)
+        run: |
+          npm install --no-save \
+            semantic-release@25 \
+            @semantic-release/changelog@6 \
+            @semantic-release/git@10 \
+            @semantic-release/npm@13 \
+            @semantic-release/github@12
+      - run: npx semantic-release
+        env:
+          # Built-in Actions token: @semantic-release/git (push) + @semantic-release/github (releases).
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Prefer npm "Trusted publishing" (OIDC): configure package on npmjs.com for workflow file **release.yml**,
+          # then omit NPM_TOKEN. Optional fallback while migrating: set repo secret NPM_TOKEN (automation token).
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,40 @@
+{
+  "name": "loxberry-client-mcp",
+  "version": "0.0.0",
+  "description": "stdio MCP server exposing LoxBerry client tools (plugins, JSON-RPC, logs)",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spid3r/loxberry-client-library.git",
+    "directory": "packages/loxberry-client-mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/spid3r/loxberry-client-library/issues"
+  },
+  "homepage": "https://github.com/spid3r/loxberry-client-library/tree/main/packages/loxberry-client-mcp#readme",
+  "bin": {
+    "loxberry-client-mcp": "./dist/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "start": "node dist/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "loxberry-client-library": "file:../..",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsup": "^8.5.1",
+    "typescript": "~6.0.3"
+  }
+}

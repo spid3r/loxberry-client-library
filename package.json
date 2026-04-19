@@ -1,0 +1,96 @@
+{
+  "name": "loxberry-client-library",
+  "version": "0.0.1",
+  "description": "TypeScript client for LoxBerry 3.x: JSON-RPC, plugin admin HTTP, optional MQTT broker hints via JSON-RPC, CLI.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "import": "./dist/index.d.ts",
+        "require": "./dist/index.d.cts"
+      },
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./mqtt": {
+      "types": {
+        "import": "./dist/mqtt.d.ts",
+        "require": "./dist/mqtt.d.cts"
+      },
+      "import": "./dist/mqtt.js",
+      "require": "./dist/mqtt.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "loxberry-client": "./dist/cli.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "build:mcp": "npm run build -w loxberry-client-mcp",
+    "docs:sync-cli": "tsx scripts/sync-readme-cli.mts",
+    "build:all": "npm run build && npm run build:mcp",
+    "typecheck:test": "tsc --noEmit -p tsconfig.test.json",
+    "test": "mocha --import=tsx/esm \"test/**/*.test.ts\"",
+    "test:live": "cross-env LOXBERRY_LIVE_TESTS=1 mocha --import=tsx/esm \"test/**/*.test.ts\"",
+    "test:live:upload": "cross-env LOXBERRY_LIVE_TESTS=1 LOXBERRY_LIVE_UPLOAD=1 mocha --import=tsx/esm \"test/**/*.test.ts\"",
+    "test:live:full": "cross-env LOXBERRY_LIVE_TESTS=1 LOXBERRY_LIVE_UPLOAD=1 LOXBERRY_LIVE_UNINSTALL=1 mocha --import=tsx/esm \"test/**/*.test.ts\"",
+    "test:live:debug": "cross-env LOXBERRY_LIVE_TESTS=1 LOXBERRY_LIVE_UPLOAD=1 LOXBERRY_LIVE_DEBUG=1 mocha --import=tsx/esm \"test/**/*.test.ts\"",
+    "test:live:debug:full": "cross-env LOXBERRY_LIVE_TESTS=1 LOXBERRY_LIVE_UPLOAD=1 LOXBERRY_LIVE_UNINSTALL=1 LOXBERRY_LIVE_DEBUG=1 mocha --import=tsx/esm \"test/**/*.test.ts\"",
+    "test:mcp": "node --import=tsx/esm packages/loxberry-client-mcp/test/smoke.ts",
+    "build:e2e-zip": "tsx scripts/build-e2e-plugin-zip.ts",
+    "lint:commits": "commitlint --from origin/main --to HEAD --verbose",
+    "release:dry-run": "npm install --no-save semantic-release@25 @semantic-release/changelog@6 @semantic-release/git@10 @semantic-release/npm@13 @semantic-release/github@12 && npx semantic-release --dry-run",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.6.0",
+    "cross-env": "^10.1.0",
+    "jszip": "^3.10.1",
+    "mocha": "^11.7.5",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "~6.0.3",
+    "undici": "^8.1.0"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/spid3r/loxberry-client-library"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spid3r/loxberry-client-library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spid3r/loxberry-client-library/issues"
+  },
+  "homepage": "https://github.com/spid3r/loxberry-client-library#readme",
+  "keywords": [
+    "loxberry",
+    "json-rpc",
+    "home-automation",
+    "typescript",
+    "plugin"
+  ],
+  "author": ""
+}

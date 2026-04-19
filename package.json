@@ -1,6 +1,6 @@
 {
   "name": "loxberry-client-library",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "TypeScript client for LoxBerry 3.x: JSON-RPC, plugin admin HTTP, optional MQTT broker hints via JSON-RPC, CLI.",
   "license": "MIT",
   "type": "module",

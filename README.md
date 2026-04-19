@@ -10,6 +10,10 @@
 
 Releases to npm and the changelog are driven by **[semantic-release](https://github.com/semantic-release/semantic-release)** on `main` using **[Conventional Commits](https://www.conventionalcommits.org/)** — see [RELEASING.md](RELEASING.md) and [CONTRIBUTING.md](CONTRIBUTING.md). **Beerware** is an informal thank-you on top of MIT ([below](#license)).
 
+### Monorepo
+
+This repository is an **npm workspaces** monorepo: the root package **`loxberry-client-library`** (library + CLI) and **`packages/loxberry-client-mcp`** (**`loxberry-client-mcp`** on npm — MCP server). Each package has its own `package.json`, version line, and release notes; CI and Release workflows run from the repo root. See [RELEASING.md](RELEASING.md) for how the two packages are published.
+
 TypeScript client for **LoxBerry 3.x** (3.x-first): JSON-RPC (`/admin/system/jsonrpc.php`), **HTTP Basic** on `/admin` (same as [stock `htmlauth/.htaccess`](https://github.com/mschlenstedt/Loxberry/blob/master/webfrontend/htmlauth/.htaccess)), and helpers aligned with **`plugininstall.cgi`** (plugin list, upload with SecurePIN, uninstall). Includes a small CLI and an optional MCP server package.
 
 - [LoxBerry wiki — Node.js & JsonRpc](https://wiki.loxberry.de/entwickler/advanced_developers/nodejs_for_plugins)

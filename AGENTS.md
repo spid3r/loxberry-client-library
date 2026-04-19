@@ -8,6 +8,8 @@ TypeScript client for **LoxBerry 3.x**: JSON-RPC (`/admin/system/jsonrpc.php`), 
 
 Target users: **plugin developers** automating test/deploy against a real or mocked appliance.
 
+**Monorepo:** npm **workspaces** — root package **`loxberry-client-library`** and **`packages/loxberry-client-mcp`** (published as **`loxberry-client-mcp`**). Layout and dependency notes: [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ## Auth
 
 - Stock images: **`/admin`** is **HTTP Basic** (Apache `htmlauth`). Default client strategy **`basic`** sends the same user/password as the browser on every request.

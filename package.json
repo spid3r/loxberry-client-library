@@ -58,7 +58,7 @@
     "build:e2e-zip": "tsx scripts/build-e2e-plugin-zip.ts",
     "lint:commits": "commitlint --from origin/main --to HEAD --verbose",
     "release:dry-run": "npm install --no-save semantic-release@25 @semantic-release/changelog@6 @semantic-release/git@10 @semantic-release/npm@13 @semantic-release/github@12 multi-semantic-release@3 && npx semantic-release --dry-run && node scripts/release-mcp.mjs --dry-run",
-    "release:mcp": "node scripts/release-mcp.mjs",
+    "release:mcp": "npm install --no-save multi-semantic-release@3 && node scripts/release-mcp.mjs",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
@@ -69,7 +69,6 @@
     "cross-env": "^10.1.0",
     "jszip": "^3.10.1",
     "mocha": "^11.7.5",
-    "multi-semantic-release": "^3.1.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "~6.0.3",
@@ -94,5 +93,25 @@
     "typescript",
     "plugin"
   ],
-  "author": "Thorsten Wolf"
+  "author": "Thorsten Wolf",
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.5",
+    "brace-expansion": "^5.0.5",
+    "tinyglobby": {
+      "picomatch": "^4.0.4",
+      "fdir": {
+        "picomatch": "^4.0.4"
+      }
+    },
+    "npm": {
+      "brace-expansion": "^5.0.5",
+      "tinyglobby": {
+        "picomatch": "^4.0.4",
+        "fdir": {
+          "picomatch": "^4.0.4"
+        }
+      }
+    }
+  }
 }

@@ -1,6 +1,12 @@
 # loxberry-client-mcp
 
+[![CI](https://github.com/spid3r/loxberry-client-library/actions/workflows/ci.yml/badge.svg)](https://github.com/spid3r/loxberry-client-library/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/loxberry-client-mcp)](https://www.npmjs.com/package/loxberry-client-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 stdio [Model Context Protocol](https://modelcontextprotocol.io) server that exposes LoxBerry plugin and JSON-RPC operations as tools.
+
+This package is developed in the **[loxberry-client-library](https://github.com/spid3r/loxberry-client-library)** monorepo (`packages/loxberry-client-mcp`) and published to npm as **`loxberry-client-mcp`**. The published tarball includes this **README**, **CHANGELOG**, and **LICENSE**; registry metadata also carries **`license`: `MIT`** from `package.json`.
 
 ## Setup
 

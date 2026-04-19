@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/spid3r/loxberry-client-library/compare/v1.0.0...v1.0.1) (2026-04-19)
+
+
+### Bug Fixes
+
+* **release:** make MCP multi-semantic-release work with semantic-release v25 ([21c6891](https://github.com/spid3r/loxberry-client-library/commit/21c6891ed8bf6005dd3326e58625531bb08b3e98))
+
 # 1.0.0 (2026-04-19)
 
 

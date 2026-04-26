@@ -4,7 +4,10 @@
     [
       "@semantic-release/commit-analyzer",
       {
-        "releaseRules": [{ "scope": "mcp", "release": false }]
+        "releaseRules": [
+          { "type": "enh", "release": "minor" },
+          { "scope": "mcp", "release": false }
+        ]
       }
     ],
     "@semantic-release/release-notes-generator",

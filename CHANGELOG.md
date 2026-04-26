@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/spid3r/loxberry-client-library/compare/v1.0.3...v1.0.4) (2026-04-26)
+
+
+### Bug Fixes
+
+* add --securePin flag for plugin upload and enhance error handling ([3ec372f](https://github.com/spid3r/loxberry-client-library/commit/3ec372f3e7cbddf2246b7bea0cc2428c3588211a))
+
 ## [1.0.3](https://github.com/spid3r/loxberry-client-library/compare/v1.0.2...v1.0.3) (2026-04-19)
 
 

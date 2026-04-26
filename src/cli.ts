@@ -1,7 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
+import * as path from "node:path";
 import {
   authStrategyFromEnv,
+  extractInstallLogTempfileFromHtml,
   httpBasicCredentialsFromEnv,
   loginFormFieldsFromEnv,
   loginPathFromEnv,
@@ -9,6 +11,102 @@ import {
   SessionAuth,
 } from "./index.js";
 import { formatCliHelpText } from "./cli-reference.js";
+import {
+  findLatestLoxberryPluginZip,
+  isLikelyLoxberryPluginMd5,
+  readFolderFromPluginCfg,
+} from "./plugin-dev-helpers.js";
+
+type PluginsApi = LoxBerryClient["plugins"];
+
+async function runUploadWithOptionalWait(
+  plugins: PluginsApi,
+  buf: Buffer,
+  fileLabel: string,
+  securePin: string | undefined,
+  waitInstall: boolean,
+  pluginFolder: string,
+): Promise<void> {
+  const name = fileLabel.split(/[/\\]/).pop() ?? "plugin.zip";
+  const body = await plugins.uploadPluginZip(buf, name, { securePin });
+  if (!waitInstall) {
+    console.log(body);
+    return;
+  }
+  const tempfile = extractInstallLogTempfileFromHtml(body);
+  if (tempfile) {
+    await plugins.followPluginInstallTempLog(tempfile);
+  }
+  if (pluginFolder) {
+    const row = await plugins.waitForPluginFolder(pluginFolder);
+    console.log(JSON.stringify({ ok: true, plugin: row }, null, 2));
+  } else {
+    const tail = tempfile
+      ? { ok: true, message: "install log complete (no --plugin-folder, skipped list wait)" }
+      : { ok: true, message: "no tempfile in upload HTML; pass --plugin-folder to poll plugins list" };
+    console.log(JSON.stringify(tail, null, 2));
+  }
+}
+
+/**
+ * LoxBerry sometimes returns a non-zero or throws even though the install completed.
+ * If the installed row's md5 changed vs. before, treat as success (same as stock UI quirks some users see over automation).
+ */
+async function deployWithOptionalMd5SuccessQuirk(
+  client: LoxBerryClient,
+  zipPath: string,
+  folder: string,
+  securePin: string | undefined,
+): Promise<void> {
+  const plugins = client.plugins;
+  const before = await plugins.listInstalledPlugins();
+  const beforeMd5 = new Map<string, string>();
+  for (const p of before) {
+    const key = p.folder || p.name;
+    if (key) beforeMd5.set(String(key), (p.md5 ?? "").trim());
+  }
+  const buf = Buffer.from(await readFile(zipPath));
+  const base = path.basename(zipPath);
+  try {
+    await runUploadWithOptionalWait(plugins, buf, base, securePin, true, folder);
+  } catch (err) {
+    const after = await plugins.listInstalledPlugins();
+    const row = after.find((p) => p.folder === folder);
+    const oldM = beforeMd5.get(folder) ?? "";
+    const newM = (row?.md5 ?? "").trim();
+    if (row && newM && newM !== oldM) {
+      process.stderr.write(
+        `[loxberry-client] primary deploy flow failed (${err instanceof Error ? err.message : String(err)}), ` +
+          `but plugin folder '${folder}' md5 changed (${oldM || "n/a"} -> ${newM}) — treating as success.\n`,
+      );
+      console.log(
+        JSON.stringify(
+          { ok: true, plugin: row, quirk: "md5-changed-despite-failed-primary-flow" },
+          null,
+          2,
+        ),
+      );
+      return;
+    }
+    throw err;
+  }
+}
+
+async function resolveUninstallPluginMd5(plugins: PluginsApi, nameOrFolder: string): Promise<string> {
+  const t = nameOrFolder.trim();
+  if (isLikelyLoxberryPluginMd5(t)) {
+    return t;
+  }
+  const list = await plugins.listInstalledPlugins();
+  const row = list.find((p) => p.folder === t || p.name === t);
+  if (!row?.md5) {
+    throw new Error(
+      `No installed plugin with folder/name '${t}' in plugins list (or missing md5). ` +
+        `Run 'plugins list' and use --name <32-char-md5> if needed.`,
+    );
+  }
+  return row.md5.trim();
+}
 
 async function main(): Promise<void> {
   const { values, positionals } = parseArgs({
@@ -23,6 +121,10 @@ async function main(): Promise<void> {
       follow: { type: "boolean" },
       params: { type: "string" },
       securePin: { type: "string" },
+      "wait-install": { type: "boolean" },
+      "plugin-folder": { type: "string" },
+      /** Project root: directory containing `plugin.cfg` and `dist/` (used by \`plugins deploy\`). */
+      project: { type: "string" },
     },
   });
 
@@ -68,19 +170,40 @@ async function main(): Promise<void> {
     if (sub === "upload") {
       const f = values.file;
       if (!f) throw new Error("Usage: plugins upload --file path/to.zip");
-      const buf = await readFile(f);
-      const name = f.split(/[/\\]/).pop() ?? "plugin.zip";
+      const buf = Buffer.from(await readFile(f));
       const securePin = values.securePin ?? process.env.LOXBERRY_SECURE_PIN;
-      const body = await client.plugins.uploadPluginZip(buf, name, {
+      const waitInstall = values["wait-install"] === true;
+      const pluginFolder = (values["plugin-folder"] ?? "").trim();
+      await runUploadWithOptionalWait(
+        client.plugins,
+        buf,
+        f,
         securePin,
-      });
-      console.log(body);
+        waitInstall,
+        pluginFolder,
+      );
+      return;
+    }
+    if (sub === "deploy") {
+      const projectRoot = path.resolve(values.project ?? process.cwd());
+      const folder =
+        (values["plugin-folder"] && values["plugin-folder"].trim() !== ""
+          ? values["plugin-folder"]
+          : readFolderFromPluginCfg(projectRoot)) || "";
+      const zipPath = values.file
+        ? path.resolve(values.file)
+        : findLatestLoxberryPluginZip(projectRoot);
+      const securePin = values.securePin ?? process.env.LOXBERRY_SECURE_PIN;
+      await deployWithOptionalMd5SuccessQuirk(client, zipPath, folder, securePin);
       return;
     }
     if (sub === "uninstall") {
       const id = values.name;
-      if (!id) throw new Error("Usage: plugins uninstall --name <md5-or-folder>");
-      const body = await client.plugins.uninstallPlugin(id);
+      if (!id) {
+        throw new Error("Usage: plugins uninstall --name <md5 | plugin folder from plugin.cfg FOLDER=>");
+      }
+      const md5 = await resolveUninstallPluginMd5(client.plugins, id);
+      const body = await client.plugins.uninstallPlugin(md5);
       console.log(body);
       return;
     }

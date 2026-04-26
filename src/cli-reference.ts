@@ -21,9 +21,25 @@ export const CLI_GLOBAL_FLAGS: CliGlobalFlag[] = [
   { flag: "`--baseUrl <url>`", description: "LoxBerry base URL (overrides `LOXBERRY_BASE_URL`)." },
   { flag: "`--user <name>`", description: "Admin user (overrides `LOXBERRY_USERNAME`)." },
   { flag: "`--password <secret>`", description: "Password (overrides `LOXBERRY_PASSWORD`)." },
-  { flag: "`--file <path>`", description: "Used by **`plugins upload`** — path to `.zip`." },
-  { flag: "`--name <id>`", description: "Used by **`plugins uninstall`** — plugin md5 or folder name." },
+  {
+    flag: "`--file <path>`",
+    description: "Path to a `.zip` — **`plugins upload`** (required), or **`plugins deploy`** (optional: newest `dist/loxberry-plugin-*.zip` if omitted).",
+  },
+  {
+    flag: "`--project <dir>`",
+    description: "Plugin project root (contains **`plugin.cfg`** + **`dist/`**). Default: current directory. Used by **`plugins deploy`**.",
+  },
+  { flag: "`--name <id>`", description: "Used by **`plugins uninstall`** — 32-char **md5** (pid) **or** the **`FOLDER=`** name; the latter is resolved via **`plugins list`**." },
   { flag: "`--securePin <pin>`", description: "Used by **`plugins upload`** — overrides `LOXBERRY_SECURE_PIN`." },
+  {
+    flag: "`--wait-install`",
+    description:
+      "Used by **`plugins upload`** — after POST, follow the temp `logfile.cgi` install log, then (with **`--plugin-folder`**) wait until that folder appears in **`plugins list`** (same as stock UI).",
+  },
+  {
+    flag: "`--plugin-folder <name>`",
+    description: "With **`--wait-install`**: poll the installed-plugins list until this `FOLDER` from `plugin.cfg` exists.",
+  },
   { flag: "`--follow`", description: "Used by **`logs install`** — poll generic install log until completion." },
   {
     flag: "`--params '<json>'`",
@@ -37,15 +53,19 @@ export const CLI_COMMANDS: CliCommand[] = [
     summary: "Print installed plugins (JSON) from plugin admin list URL.",
   },
   {
-    usage: "plugins upload --file ./plugin.zip",
-    summary: "POST multipart upload to stock `plugininstall.cgi` (set `LOXBERRY_SECURE_PIN` for install).",
-    notes: [
-      "Does not wait on tempfile install log; use the library API (`followPluginInstallTempLog`) for automation.",
-    ],
+    usage: "plugins upload --file ./plugin.zip [--wait-install] [--plugin-folder myplugin]",
+    summary:
+      "POST multipart upload to stock `plugininstall.cgi` (set `LOXBERRY_SECURE_PIN` for install). Add `--wait-install` to poll the temp install log and (recommended) `--plugin-folder` to wait until the plugin row exists.",
+  },
+  {
+    usage: "plugins deploy [--project .] [--file ./dist/....zip] [--plugin-folder myplugin]",
+    summary:
+      "Plugin developer shortcut: from **`--project`**, read **`FOLDER=`** in **`plugin.cfg`**, pick the newest **`dist/loxberry-plugin-*.zip`**, then upload with **`--wait-install`** and wait for the folder; if the main flow throws but the installed **md5** changes, still exits 0 (LoxBerry quirk).",
   },
   {
     usage: "plugins uninstall --name <md5-or-folder>",
-    summary: "Two-step GET uninstall (confirm + `answer=1`), same as the web UI.",
+    summary:
+      "Two-step GET uninstall (confirm + `answer=1`), same as the web UI. **`--name`** can be the plugin **folder** (from `plugin.cfg`); the CLI resolves the **pid (md5)** from **`plugins list`** when the value is not 32 hex chars.",
   },
   {
     usage: "logs install",
@@ -132,7 +152,8 @@ export function formatCliReferenceMarkdown(): string {
     "",
     "```bash",
     "npx loxberry-client plugins list --baseUrl https://loxberry.local --user admin --password \"$LOX_PASS\"",
-    "npx loxberry-client plugins upload --file ./dist/myplugin.zip",
+    "npx loxberry-client plugins upload --file ./dist/myplugin.zip --wait-install --plugin-folder myplugin",
+    "npx loxberry-client plugins deploy --project .",
     "npx loxberry-client plugins uninstall --name <md5-or-folder>",
     "npx loxberry-client logs install --follow",
     "npx loxberry-client jsonrpc call LBSystem::get_miniservers --params '[]'",

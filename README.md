@@ -55,7 +55,7 @@ You can integrate with LoxBerry in three complementary ways — often **library 
 | How | npm package | What it is for |
 |-----|-------------|----------------|
 | **Client library** | [`loxberry-client-library`](https://www.npmjs.com/package/loxberry-client-library) | **Automate** JSON-RPC, plugin **list / upload / uninstall**, and install-log polling from **Node.js or TypeScript** — ideal for **tests**, **CI**, and **plugin tooling** (build a zip, upload, verify, tear down). |
-| **CLI** | same package (binary `loxberry-client`) | **Shell-friendly** commands (`plugins list`, `plugins upload`, `plugins uninstall`, `jsonrpc call`, …) without writing code. |
+| **CLI** | same package (binary `loxberry-client`) | **Shell-friendly** commands (`plugins list`, `plugins deploy`, `plugins upload`, `plugins uninstall`, `jsonrpc call`, …) without writing code. |
 | **MCP server** | [`loxberry-client-mcp`](https://www.npmjs.com/package/loxberry-client-mcp) | **Model Context Protocol** stdio server for editors such as **Cursor** / **VS Code** — exposes LoxBerry operations as **tools** for assistants. |
 
 **Plugin development and testing:** the library matches stock **`plugininstall.cgi`** behavior (multipart upload with SecurePIN, uninstall confirm flow, temp install log polling). That lets you **repeat upload → install → uninstall** cycles from scripts or tests instead of only manual clicks — see [Development](#development) → live tests (`test:live:full`) for an end-to-end example.
@@ -128,6 +128,8 @@ const ms = await client.call("LBSystem::get_miniservers", []);
 const plugins = await client.plugins.listInstalledPlugins();
 ```
 
+From the shell, **`plugins deploy --project .`** is the usual plugin-author loop: it picks the newest **`dist/loxberry-plugin-*.zip`**, reads **`FOLDER=`** from **`plugin.cfg`**, uploads, waits for install + list row, and tolerates a known **“md5 changed though something threw”** quirk. Pair with **`plugins uninstall --name <folder>`** (folder or md5 — the CLI resolves folder → pid when needed).
+
 ### MQTT broker hints (optional, JSON-RPC only)
 
 **`fetchMqttConnectionDetails`** is exported from **`loxberry-client-library/mqtt`**. It calls LoxBerry JSON-RPC (`mqtt_connectiondetails` with fallbacks) and returns host/port/user/pass hints. **This repo does not ship or depend on an MQTT client** — connect with whatever library you use (`mqtt`, WebSocket, etc.).
@@ -190,9 +192,12 @@ Auto-generated from [`src/cli-reference.ts`](src/cli-reference.ts) — run `npm 
 | `--baseUrl <url>` | LoxBerry base URL (overrides `LOXBERRY_BASE_URL`). |
 | `--user <name>` | Admin user (overrides `LOXBERRY_USERNAME`). |
 | `--password <secret>` | Password (overrides `LOXBERRY_PASSWORD`). |
-| `--file <path>` | Used by **`plugins upload`** — path to `.zip`. |
-| `--name <id>` | Used by **`plugins uninstall`** — plugin md5 or folder name. |
+| `--file <path>` | Path to a `.zip` — **`plugins upload`** (required), or **`plugins deploy`** (optional: newest `dist/loxberry-plugin-*.zip` if omitted). |
+| `--project <dir>` | Plugin project root (contains **`plugin.cfg`** + **`dist/`**). Default: current directory. Used by **`plugins deploy`**. |
+| `--name <id>` | Used by **`plugins uninstall`** — 32-char **md5** (pid) **or** the **`FOLDER=`** name; the latter is resolved via **`plugins list`**. |
 | `--securePin <pin>` | Used by **`plugins upload`** — overrides `LOXBERRY_SECURE_PIN`. |
+| `--wait-install` | Used by **`plugins upload`** — after POST, follow the temp `logfile.cgi` install log, then (with **`--plugin-folder`**) wait until that folder appears in **`plugins list`** (same as stock UI). |
+| `--plugin-folder <name>` | With **`--wait-install`**: poll the installed-plugins list until this `FOLDER` from `plugin.cfg` exists. |
 | `--follow` | Used by **`logs install`** — poll generic install log until completion. |
 | `--params '<json>'` | Used by **`jsonrpc call`** — JSON-RPC params (default `[]`). |
 
@@ -201,8 +206,9 @@ Auto-generated from [`src/cli-reference.ts`](src/cli-reference.ts) — run `npm 
 | Command | Description |
 |---------|-------------|
 | `loxberry-client plugins list` | Print installed plugins (JSON) from plugin admin list URL. |
-| `loxberry-client plugins upload --file ./plugin.zip` | POST multipart upload to stock `plugininstall.cgi` (set `LOXBERRY_SECURE_PIN` for install).<br><small>Does not wait on tempfile install log; use the library API (`followPluginInstallTempLog`) for automation.</small> |
-| `loxberry-client plugins uninstall --name <md5-or-folder>` | Two-step GET uninstall (confirm + `answer=1`), same as the web UI. |
+| `loxberry-client plugins upload --file ./plugin.zip [--wait-install] [--plugin-folder myplugin]` | POST multipart upload to stock `plugininstall.cgi` (set `LOXBERRY_SECURE_PIN` for install). Add `--wait-install` to poll the temp install log and (recommended) `--plugin-folder` to wait until the plugin row exists. |
+| `loxberry-client plugins deploy [--project .] [--file ./dist/....zip] [--plugin-folder myplugin]` | Plugin developer shortcut: from **`--project`**, read **`FOLDER=`** in **`plugin.cfg`**, pick the newest **`dist/loxberry-plugin-*.zip`**, then upload with **`--wait-install`** and wait for the folder; if the main flow throws but the installed **md5** changes, still exits 0 (LoxBerry quirk). |
+| `loxberry-client plugins uninstall --name <md5-or-folder>` | Two-step GET uninstall (confirm + `answer=1`), same as the web UI. **`--name`** can be the plugin **folder** (from `plugin.cfg`); the CLI resolves the **pid (md5)** from **`plugins list`** when the value is not 32 hex chars. |
 | `loxberry-client logs install` | Read `getInstallLog()` (generic path; not the per-upload tempfile).<br><small>Add `--follow` to poll until a completion phrase appears.</small> |
 | `loxberry-client jsonrpc call <method> [--params '[]']` | Call `/admin/system/jsonrpc.php` with session/Basic headers. |
 
@@ -221,7 +227,8 @@ Auto-generated from [`src/cli-reference.ts`](src/cli-reference.ts) — run `npm 
 
 ```bash
 npx loxberry-client plugins list --baseUrl https://loxberry.local --user admin --password "$LOX_PASS"
-npx loxberry-client plugins upload --file ./dist/myplugin.zip
+npx loxberry-client plugins upload --file ./dist/myplugin.zip --wait-install --plugin-folder myplugin
+npx loxberry-client plugins deploy --project .
 npx loxberry-client plugins uninstall --name <md5-or-folder>
 npx loxberry-client logs install --follow
 npx loxberry-client jsonrpc call LBSystem::get_miniservers --params '[]'

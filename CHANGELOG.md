@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/spid3r/loxberry-client-library/compare/v1.0.4...v1.1.0) (2026-04-26)
+
+
+### Features
+
+* **cli:** add new options ([14d5787](https://github.com/spid3r/loxberry-client-library/commit/14d57870a31eb11ca5e44c78a48a72dc5fae4721))
+
 ## [1.0.4](https://github.com/spid3r/loxberry-client-library/compare/v1.0.3...v1.0.4) (2026-04-26)
 
 

@@ -192,6 +192,7 @@ Auto-generated from [`src/cli-reference.ts`](src/cli-reference.ts) — run `npm 
 | `--password <secret>` | Password (overrides `LOXBERRY_PASSWORD`). |
 | `--file <path>` | Used by **`plugins upload`** — path to `.zip`. |
 | `--name <id>` | Used by **`plugins uninstall`** — plugin md5 or folder name. |
+| `--securePin <pin>` | Used by **`plugins upload`** — overrides `LOXBERRY_SECURE_PIN`. |
 | `--follow` | Used by **`logs install`** — poll generic install log until completion. |
 | `--params '<json>'` | Used by **`jsonrpc call`** — JSON-RPC params (default `[]`). |
 

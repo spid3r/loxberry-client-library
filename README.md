@@ -382,6 +382,7 @@ If you use a **custom HTML form** login instead, set **`LOXBERRY_AUTH_STRATEGY=f
 - **JSON-RPC** uses the same `Authorization` (and cookies, if any) as other `/admin` requests — nothing extra to enable ([wiki — JsonRpc](https://wiki.loxberry.de/entwickler/advanced_developers/nodejs_for_plugins)).
 - Optional: **`LOXBERRY_HTTP_BASIC_*`** if the Basic user/password differ from **`LOXBERRY_USERNAME` / `LOXBERRY_PASSWORD`**.
 
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

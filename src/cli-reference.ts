@@ -23,6 +23,7 @@ export const CLI_GLOBAL_FLAGS: CliGlobalFlag[] = [
   { flag: "`--password <secret>`", description: "Password (overrides `LOXBERRY_PASSWORD`)." },
   { flag: "`--file <path>`", description: "Used by **`plugins upload`** — path to `.zip`." },
   { flag: "`--name <id>`", description: "Used by **`plugins uninstall`** — plugin md5 or folder name." },
+  { flag: "`--securePin <pin>`", description: "Used by **`plugins upload`** — overrides `LOXBERRY_SECURE_PIN`." },
   { flag: "`--follow`", description: "Used by **`logs install`** — poll generic install log until completion." },
   {
     flag: "`--params '<json>'`",

@@ -22,6 +22,7 @@ async function main(): Promise<void> {
       name: { type: "string" },
       follow: { type: "boolean" },
       params: { type: "string" },
+      securePin: { type: "string" },
     },
   });
 
@@ -69,7 +70,10 @@ async function main(): Promise<void> {
       if (!f) throw new Error("Usage: plugins upload --file path/to.zip");
       const buf = await readFile(f);
       const name = f.split(/[/\\]/).pop() ?? "plugin.zip";
-      const body = await client.plugins.uploadPluginZip(buf, name);
+      const securePin = values.securePin ?? process.env.LOXBERRY_SECURE_PIN;
+      const body = await client.plugins.uploadPluginZip(buf, name, {
+        securePin,
+      });
       console.log(body);
       return;
     }

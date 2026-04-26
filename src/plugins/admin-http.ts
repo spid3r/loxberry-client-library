@@ -412,23 +412,63 @@ async function toZipBytes(file: PluginZipBody): Promise<Uint8Array> {
 function assertLooksLikeInstallProgressOrThrow(text: string): void {
   if (text.length < 400 || !/<html/i.test(text)) return;
   if (looksLikePluginInstallProgressHtml(text)) return;
-  const pinHint =
-    /securepin|SecurePIN/i.test(text) && /wrong|error|invalid|ERR_/i.test(text)
-      ? "Response mentions SecurePIN/errors — check LOXBERRY_SECURE_PIN. "
-      : "";
-  throw new LoxBerryHttpError(
-    `${pinHint}Upload POST did not return the install progress page (missing #Logfile). First ~350 chars: ${text.slice(0, 350).replace(/\s+/g, " ")}`,
-    500,
-    text.slice(0, 400),
-  );
+  if (looksLikePluginInstallErrorHtml(text)) {
+    const errorSummary = extractHtmlAlertSummary(text);
+    const pinHint =
+      /securepin|SecurePIN/i.test(text) && /wrong|error|invalid|ERR_/i.test(text)
+        ? "Response mentions SecurePIN/errors — check LOXBERRY_SECURE_PIN. "
+        : "";
+    const details = errorSummary ? ` Server message: ${errorSummary} ` : " ";
+    throw new LoxBerryHttpError(
+      `${pinHint}Upload POST returned an install error page.${details}First ~350 chars: ${text.slice(0, 350).replace(/\s+/g, " ")}`,
+      500,
+      text.slice(0, 400),
+    );
+  }
+  // Some LoxBerry variants redirect/render plugin management HTML without the classic #Logfile marker
+  // even though installation is triggered in background. Treat as non-fatal and let callers verify via list/log.
 }
 
 function looksLikePluginInstallProgressHtml(html: string): boolean {
   return (
     /id\s*=\s*["']Logfile["']/i.test(html) ||
     /plugininstall-status/.test(html) ||
+    /Processing installation/i.test(html) ||
     /\/admin\/system\/tools\/logfile\.cgi\?logfile=/i.test(html)
   );
+}
+
+function looksLikePluginInstallErrorHtml(html: string): boolean {
+  const hasErrorTokens =
+    /\b(ERR_[A-Z0-9_]+|LOGCRIT|LOGFAIL|Sub ERROR)\b/.test(html) ||
+    /An error occurred\..*not be installed/i.test(html) ||
+    /could not be installed/i.test(html);
+  const mentionsSecurePin = /securepin|SecurePIN/i.test(html) && /(wrong|invalid|error|falsch)/i.test(html);
+  return hasErrorTokens || mentionsSecurePin;
+}
+
+function extractHtmlAlertSummary(html: string): string | undefined {
+  const templateErrorMatches = html.matchAll(/<h2[^>]*>([\s\S]*?)<\/h2>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/gi);
+  for (const m of templateErrorMatches) {
+    const headline = (m[1] ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const detail = (m[2] ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const combined = `${headline}${detail ? ` ${detail}` : ""}`.trim();
+    if (/(error|failed|invalid|falsch|wrong|lock|locked|ERR_[A-Z0-9_]+)/i.test(combined)) {
+      return combined.slice(0, 260);
+    }
+  }
+
+  const divMatches = Array.from(
+    html.matchAll(/<div[^>]*class=["'][^"']*alert[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi),
+  );
+  for (const m of divMatches) {
+    const text = (m[1] ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (!text) continue;
+    if (/(error|failed|invalid|falsch|warning|ERR_[A-Z0-9_]+)/i.test(text)) {
+      return text.slice(0, 260);
+    }
+  }
+  return undefined;
 }
 
 /** True if HTML looks like the stock post-upload install log viewer (not the generic error page). */

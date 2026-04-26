@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/spid3r/loxberry-client-library/compare/v1.1.0...v1.2.0) (2026-04-26)
+
+
+### Bug Fixes
+
+* **release:** restore conventional semantic-release behavior ([dd7e138](https://github.com/spid3r/loxberry-client-library/commit/dd7e138a76828ba6a41137922c74eee764a829de))
+
+
+### Features
+
+* **release:** support enh commits for root and MCP publishing ([3c23554](https://github.com/spid3r/loxberry-client-library/commit/3c2355462ef6e6a54a8e31dd66689b922ef5782c))
+
 # [1.1.0](https://github.com/spid3r/loxberry-client-library/compare/v1.0.4...v1.1.0) (2026-04-26)
 
 

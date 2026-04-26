@@ -1,6 +1,6 @@
 {
   "name": "loxberry-client-library",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "TypeScript client for LoxBerry 3.x: automate plugin zip upload, install, and uninstall (same flows as the stock admin UI), JSON-RPC, CLI, optional MCP server.",
   "license": "MIT",
   "type": "module",
